@@ -4,14 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
-	"path"
 )
 
 type Config struct {
 	AttemptsPerTask int `json:"attempts_per_task"`
 	Verbose         int
 	Tasks           []Task
+}
+
+func (c *Config) Println(msg string) {
+	if c.Verbose > 0 {
+		fmt.Println(msg)
+	}
+}
+
+func (c *Config) Printf(s string, a ...interface{}) {
+	if c.Verbose > 0 {
+		fmt.Printf(s, a)
+	}
 }
 
 type Task struct {
@@ -21,43 +33,23 @@ type Task struct {
 	RequestURL        string `json:"url"`
 }
 
-func (t *Task) GetCommand() string {
-	return t.GetRelativeName(t.Command)
-}
-
-func (t *Task) GetPreRequestCommand() string {
-	return t.GetRelativeName(t.PreRequestCommand)
-}
-
-func (t *Task) GetRelativeName(name string) string {
-	base, err := os.Getwd()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return path.Join(base, name)
-}
-
 func GetConfig(name string) *Config {
 	f, err := os.Open(name)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	rawData, err := ioutil.ReadAll(f)
 
-	fmt.Println(rawData)
-
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	var config Config
 
 	if err := json.Unmarshal(rawData, &config); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return &config

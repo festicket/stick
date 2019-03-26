@@ -1,0 +1,15 @@
+{
+    "attempts_per_task": 5,
+    "verbose": 0,
+    "tasks": [{
+        "name": "optimisation: improved foo and bar",
+        "command": "commands/run_feature.sh",
+        "pre_request_command": "commands/pre_request.sh",
+        "url": "https://example.com/api/v1/foo/"
+    }, {
+        "name": "master",
+        "command": "commands/run_master.sh",
+        "pre_request_command": "commands/pre_request.sh",
+        "url": "https://example.com/api/v1/foo/"
+    }]
+}
