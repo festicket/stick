@@ -17,7 +17,7 @@ func DumpBody(body []byte, dirname, name string) {
 		}
 	}
 
-	fname := path.Join(dirname, fmt.Sprintf("%v-%x.json", name, md5.Sum(body)))
+	fname := path.Join(dirname, fmt.Sprintf("%v-%x.txt", name, md5.Sum(body)))
 	f, err := os.OpenFile(fname, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
