@@ -135,7 +135,17 @@ func doRequest(i int, task *Task, config *Config) time.Duration {
 	config.Printf("[%v] %v %v\n", i, duration, resp.ContentLength)
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	var body []byte
+
+	rawBody, _ := ioutil.ReadAll(resp.Body)
+	contentType := resp.Header.Get("Content-Type")
+
+	if contentType == "application/json" {
+		body = JSONPrettyfier(rawBody)
+	} else {
+		body = rawBody
+	}
+
 	DumpBody(body, ARTEFACTS_FOLDER_NAME, task.Name)
 
 	return duration
