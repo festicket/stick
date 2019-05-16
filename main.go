@@ -32,11 +32,12 @@ func main() {
 
 	fmt.Println("---------")
 
-	for taskName, taskResults := range results {
-		fmt.Println(taskName)
+	for _, task := range config.Tasks {
+		fmt.Println(task.Name)
+
 		hashes := make(map[string]bool)
 
-		for _, r := range *taskResults {
+		for _, r := range *results[task.Name] {
 			fmt.Println(r.Duration)
 			hashes[r.HashString] = true
 		}
