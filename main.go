@@ -20,26 +20,38 @@ const (
 
 func main() {
 	config := GetConfig(CONFIG_FNAME)
-	results := make(map[string]*[]time.Duration)
+	results := make(map[string]*[]*TaskResult)
 
 	fmt.Println("Hello there")
+	ClearDirectory(ARTEFACTS_FOLDER_NAME)
 
 	for _, task := range config.Tasks {
 		results[task.Name] = runTask(&task, config)
 		fmt.Printf("Done: %v\n", task.Name)
 	}
 
-	for key, value := range results {
-		fmt.Println(key)
-		for _, d := range *value {
-			fmt.Println(d)
+	fmt.Println("---------")
+
+	for taskName, taskResults := range results {
+		fmt.Println(taskName)
+		hashes := make(map[string]bool)
+
+		for _, r := range *taskResults {
+			fmt.Println(r.Duration)
+			hashes[r.HashString] = true
 		}
+
+		for hashString, _ := range hashes {
+			fmt.Println(hashString)
+		}
+
+		fmt.Println("---------")
 	}
 
 	fmt.Println("All done. Goodbye")
 }
 
-func runTask(task *Task, config *Config) *[]time.Duration {
+func runTask(task *Task, config *Config) *[]*TaskResult {
 	config.Printf("Running task %v\n", task.Name)
 
 	c := make(chan int)
@@ -47,7 +59,7 @@ func runTask(task *Task, config *Config) *[]time.Duration {
 	// Prepare the target server
 	go runCommand(c, task.Command, config.Verbose)
 
-	results := make([]time.Duration, config.AttemptsPerTask)
+	results := make([]*TaskResult, config.AttemptsPerTask)
 
 	for pid := range c {
 		config.Println("Waiting for the server")
@@ -111,7 +123,7 @@ func runCommandSync(command string, verbose int) {
 }
 
 // doRequest does a request to API endpoint and measure the time spent.
-func doRequest(i int, task *Task, config *Config) time.Duration {
+func doRequest(i int, task *Task, config *Config) *TaskResult {
 	// TODO: init only once?
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: !VERIFY_SSL},
@@ -146,7 +158,10 @@ func doRequest(i int, task *Task, config *Config) time.Duration {
 		body = rawBody
 	}
 
-	DumpBody(body, ARTEFACTS_FOLDER_NAME, task.Name)
+	hash_string := DumpBody(body, ARTEFACTS_FOLDER_NAME, task.Name)
 
-	return duration
+	return &TaskResult{
+		Duration:   duration,
+		HashString: hash_string,
+	}
 }

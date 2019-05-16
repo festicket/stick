@@ -1,6 +1,7 @@
 {
     "attempts_per_task": 5,
     "verbose": 0,
+    "keep_artefacts": false,
     "tasks": [{
         "name": "optimisation: improved foo and bar",
         "command": "commands/run_feature.sh",

@@ -6,12 +6,14 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 )
 
 type Config struct {
 	AttemptsPerTask int `json:"attempts_per_task"`
 	Verbose         int
 	Tasks           []Task
+	KeepArtefacts   bool `json:"keep_artefacts"`
 }
 
 func (c *Config) Println(msg string) {
@@ -53,4 +55,9 @@ func GetConfig(name string) *Config {
 	}
 
 	return &config
+}
+
+type TaskResult struct {
+	Duration   time.Duration
+	HashString string
 }
