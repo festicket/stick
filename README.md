@@ -1,5 +1,13 @@
 # Stick
 
+## Dev dependencies
+
+This project requires Go to develop. All dependencies are are listed in the Brewfile, and can be installed using Homebrew:
+
+```
+brew bundle
+```
+
 ## Build
 
 Run:
