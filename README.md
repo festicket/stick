@@ -10,13 +10,33 @@ brew bundle
 
 ## Build
 
+You have two options to build the binary:
+
+1. If you have Go installed locally and you checkouted the repository withint your $GOPATH then just use:
 Run:
 
 ```bash
 make build
 ```
 
-It will create a binary called `stick` in the current directory. In order of it to work - need to create a config file:
+2. You also can checkout the repo anywhere and build the binary using Docker:
+
+```bash
+make build_docker
+```
+
+By default `build_docker` command will build the binary for MacOS (amd64) but you can override this via `GOOS` and `GOARCH` paramaters e.g.
+
+```bash
+make build_docker GOOS=windows
+```
+
+* although currently it is tested only for MacOS.
+
+Either way you will have a binary called `stick` in the current directory. 
+
+
+In order of it to work - need to create a config file:
 
 ```bash
 cp config.json.example config.json
