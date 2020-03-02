@@ -33,6 +33,7 @@ type Task struct {
 	Command           string
 	PreRequestCommand string `json:"pre_request_command"`
 	RequestURL        string `json:"url"`
+	Payload           string
 }
 
 func GetConfig(name string) *Config {

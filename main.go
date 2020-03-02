@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -58,7 +59,9 @@ func runTask(task *Task, config *Config) *[]*TaskResult {
 	c := make(chan int)
 
 	// Prepare the target server
-	go runCommand(c, task.Command, config.Verbose)
+	if task.Command != "" {
+		go runCommand(c, task.Command, config.Verbose)
+	}
 
 	results := make([]*TaskResult, config.AttemptsPerTask)
 
@@ -132,7 +135,19 @@ func doRequest(i int, task *Task, config *Config) *TaskResult {
 	client := &http.Client{Transport: tr}
 
 	start := time.Now()
-	resp, err := client.Get(task.RequestURL)
+
+	var resp *http.Response
+	var err error
+
+	if task.Payload != "" {
+		req, _ := http.NewRequest("POST", task.RequestURL, strings.NewReader(task.Payload))
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err = client.Do(req)
+	} else {
+		resp, err = client.Get(task.RequestURL)
+	}
+
 	end := time.Now()
 
 	if err != nil {
